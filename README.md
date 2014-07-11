@@ -1,7 +1,7 @@
-Keyder
+KeyderJS
 ======
 
-Keyder is a JavaScript event library.
+KeyderJS is a JavaScript event library.
 
 Usage
 =====
