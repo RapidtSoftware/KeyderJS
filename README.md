@@ -49,7 +49,7 @@ Example 3: a simple chained keydown/keyup event
 Advanced Features
 =====
 
-Prevent Autorepeated Keydown
+Prevent autorepeated keydown events
 ---
 
 Sometimes when the user holds down a key it fires the event repeatedly. To fix this, add a third parameter to the keydown event and set it to `true`. Example:
@@ -59,3 +59,14 @@ Sometimes when the user holds down a key it fires the event repeatedly. To fix t
 	}, true );
 
 See [this question](http://stackoverflow.com/questions/7686197/how-can-i-avoid-autorepeated-keydown-events-in-javascript) on Stackoverflow to see what I mean.
+
+Get current key name
+---
+
+Sometimes when a user pressed a key you would want to get the keyname of the pressed key. That could be easily done by using `event.keyName`, almost like `event.keyCode`, but it gives the name of the pressed key and not the code. Example:
+
+	Keyder( document.getElementById( "my_element" ) ).keydown( "any", function(event){
+		console.log( "You pressed the " + event.keyName + "key." );
+	} );
+
+Note: if you want to get the last pressed and handled key you would use `Keyder().lastKey`
