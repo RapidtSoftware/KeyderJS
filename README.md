@@ -54,6 +54,6 @@ Prevent Autorepeated Keydown
 
 Sometimes when the user holds down a key it fires the event repeatedly. To fix this, add a third parameter to the keydown event and set it to `true`. Example:
 
-    	Keyder( document.getElementById( "my_element" ) ).keydown( "shift", function(){
+	Keyder( document.getElementById( "my_element" ) ).keydown( "shift", function(){
 		console.log( "The Shift key was pressed, but the event won't be fired repeatedly and the event handler won't be executed repeatedly when you hold down the Shift key!" );
 	}, true );
