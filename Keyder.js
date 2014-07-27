@@ -6,6 +6,56 @@ document.ready = function(f){
 		setTimeout(a, 9) :
 		f();
 };
+function getWindowSize(){
+	 var viewportwidth;
+	 var viewportheight;
+	  
+	 // the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
+	  
+	 if (typeof window.innerWidth != 'undefined')
+	 {
+		  viewportwidth = window.innerWidth,
+		  viewportheight = window.innerHeight;
+	 }
+	  
+	// IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
+	 
+	 else if (typeof document.documentElement != 'undefined'
+		 && typeof document.documentElement.clientWidth !=
+		 'undefined' && document.documentElement.clientWidth != 0)
+	 {
+		   viewportwidth = document.documentElement.clientWidth,
+		   viewportheight = document.documentElement.clientHeight;
+	 }
+	  
+	 // older versions of IE
+	  
+	 else
+	 {
+		   viewportwidth = document.getElementsByTagName('body')[0].clientWidth,
+		   viewportheight = document.getElementsByTagName('body')[0].clientHeight;
+	 }
+	return {
+		width: viewportwidth,
+		height: viewportheight
+	};
+}
+function onetime(node, type, callback){
+	// create event
+	node.addEventListener(type, function(e) {
+		if(!e) e = window.event;
+		if(e.type === "keydown" || e.type === "keyup" || e.type === "keypress"){
+			var keyCode = e.which || e.keyCode;
+			e.keyCode = keyCode;
+			e.keyName = Keyder().keycodes[keyCode];
+		}
+		e.currentEvent = e.type;
+		// remove event
+		e.target.removeEventListener(e.type, arguments.callee);
+		// call handler
+		return callback(e);
+	});
+}
 String.prototype.startsWith = function(substring){
 	if(this.length < 64){
 		return this.slice(0, substring.length) == substring;
@@ -20,7 +70,7 @@ String.prototype.endsWith = function(substring){
 		return this.indexOf(substring, this.length-substring.length) === this.length-substring.length;
 	}
 };
-var Keyder = function(element){
+var Keyder = (function(element){
 	if(typeof element === "string"){
 		var element = document.getElementById(element);
 	} else if(typeof element === "object"){
@@ -37,6 +87,7 @@ var Keyder = function(element){
 			}
 		},
 		unregisterEvent: function(element, event, callback){
+			callback = (typeof callback === "function") ? callback: function(){};
 			if(document.removeEventListener){
 				element.removeEventListener(event, callback, false);
 			} else if(document.detachEvent){
@@ -76,7 +127,16 @@ var Keyder = function(element){
 			188: 'comma'
 			
 		},
-		keydown: function(key, handler){
+		getKeyCodeFromName: function(key){
+			if(typeof key === "string"){
+				for(var keys in this.keycodes){
+					if(this.keycodes[keys].toLowerCase() === key.toLowerCase()){
+						return keys;
+					}
+				}
+			}
+		},
+		keydown: function(key, handler, noautorepeat){
 			var self = this;
 			keycode = null;
 			if(typeof key === "string"){
@@ -92,23 +152,25 @@ var Keyder = function(element){
 				this.registerEvent(element, "keydown", function(e){
 					if(!e) e = window.event;
 					keyCode = e.which || e.keyCode;
-					Keyder.lastKeyCode = keyCode;
-					Keyder.lastKey = that.keycodes[parseInt(keyCode)];
+					e.keyCode = keyCode;
+					that.lastKeyCode = keyCode;
+					that.lastKey = that.keycodes[parseInt(keyCode)];
 					key.call(self, e);
 				});
 				return true;
 			} else{
 				return false;
 			}
-			if(typeof keycode !== "undefined" && typeof handler === "function" && typeof key !== "object"){
+			if(typeof keycode !== "undefined" && typeof handler === "function" && typeof key !== "object" && !noautorepeat){
 				if(!/any/g.test(key)){
 					var that = this;
 					this.registerEvent(element, "keydown", function(e){
 						if(!e) e = window.event;
 						keyCode = e.which || e.keyCode;
+						e.keyCode = keyCode;
 						if(keyCode === parseInt(keycode)){
-							Keyder.lastKey = that.keycodes[parseInt(keycode)];
-							Keyder.lastKeyCode = keyCode;
+							that.lastKey = that.keycodes[parseInt(keycode)];
+							that.lastKeyCode = keyCode;
 							handler.call(self, e);
 						}
 					});
@@ -118,12 +180,56 @@ var Keyder = function(element){
 						this.registerEvent(element, "keydown", function(e){
 							if(!e) e = window.event;
 							keyCode = e.which || e.keyCode;
-							Keyder.lastKey = that.keycodes[parseInt(keyCode)];
-							Keyder.lastKeyCode = keyCode;
+							e.keyCode = keyCode;
+							e.keyName = self.keycodes[keyCode];
+							that.lastKey = that.keycodes[parseInt(keyCode)];
+							that.lastKeyCode = keyCode;
 							handler.call(self, e);
 						});
 					}
 				}
+			} else if(typeof keycode !== "undefined" && typeof handler === "function" && typeof key !== "object" && noautorepeat){
+				if(!/any/g.test(key)){
+					var that = this;
+					var allowed = true;
+					this.registerEvent(element, "keydown", function(e){
+						if(!allowed) return false;
+						allowed = false;
+						if(!e) e = window.event;
+						keyCode = e.which || e.keyCode;
+						e.keyCode = keyCode;
+						if(keyCode === parseInt(keycode)){
+							that.lastKey = that.keycodes[parseInt(keycode)];
+							that.lastKeyCode = keyCode;
+							handler.call(self, e);
+						}
+					});
+					this.registerEvent(element, "keyup", function(){
+						allowed = true;
+					});
+				} else{
+					if(key === "any"){				
+						var that = this;
+						var allowed = true;
+						this.registerEvent(element, "keydown", function(e){
+							if(!allowed) return false;
+							if(!e) e = window.event;
+							keyCode = e.which || e.keyCode;
+							e.keyCode = keyCode;
+							e.keyName = self.keycodes[keyCode];
+							that.lastKey = that.keycodes[parseInt(keyCode)];
+							that.lastKeyCode = keyCode;
+							handler.call(self, e);
+						});
+						this.registerEvent(element, "keyup", function(){
+							allowed = true;
+						});
+						this.registerEvent(element, "focus", function(){
+							allowed = true;
+						});
+					}
+				}
+				return this;
 			} else{
 				return false;
 			}
@@ -145,8 +251,9 @@ var Keyder = function(element){
 				this.registerEvent(element, "keyup", function(e){
 					if(!e) e = window.event;
 					keyCode = e.which || e.keyCode;
-					Keyder.lastKeyCode = keyCode;
-					Keyder.lastKey = that.keycodes[parseInt(keyCode)];
+					e.keyCode = keyCode;
+					that.lastKeyCode = keyCode;
+					that.lastKey = that.keycodes[parseInt(keyCode)];
 					key.call(self, e);
 				});
 				return true;
@@ -159,9 +266,10 @@ var Keyder = function(element){
 					this.registerEvent(element, "keyup", function(e){
 						if(!e) e = window.event;
 						keyCode = e.which || e.keyCode;
+						e.keyCode = keyCode;
 						if(keyCode === parseInt(keycode)){
-							Keyder.lastKey = that.keycodes[parseInt(keycode)];
-							Keyder.lastKeyCode = keyCode;
+							that.lastKey = that.keycodes[parseInt(keycode)];
+							that.lastKeyCode = keyCode;
 							handler.call(self, e);
 						}
 					});
@@ -171,8 +279,9 @@ var Keyder = function(element){
 						this.registerEvent(element, "keyup", function(e){
 							if(!e) e = window.event;
 							keyCode = e.which || e.keyCode;
-							Keyder.lastKey = that.keycodes[parseInt(keyCode)];
-							Keyder.lastKeyCode = keyCode;
+							e.keyCode = keyCode;
+							that.lastKey = that.keycodes[parseInt(keyCode)];
+							that.lastKeyCode = keyCode;
 							handler.call(self, e);
 						});
 					}
@@ -268,6 +377,7 @@ var Keyder = function(element){
 			return this;
 		},
 		on: function(event, callback){
+			var self = this;
 			if(typeof event === "string" && typeof callback === "function"){
 				if(/\s/g.test(event)){
 					event = event.replace(/(\s+)/g, " ");
@@ -278,6 +388,11 @@ var Keyder = function(element){
 						}
 						this.registerEvent(element, events[evt], function(e){
 							if(!e) e = window.event;
+							if(e.type === "keydown" || e.type === "keyup" || e.type === "keypress"){
+								var keyCode = e.which || e.keyCode;
+								e.keyCode = keyCode;
+								e.keyName = self.keycodes[keyCode];
+							}
 							e.currentEvent = e.type;
 							callback.call(self, e);
 						});
@@ -285,10 +400,27 @@ var Keyder = function(element){
 				} else{
 					this.registerEvent(element, event, function(e){
 						if(!e) e = window.event;
+						if(e.type === "keydown" || e.type === "keyup" || e.type === "keypress"){
+							var keyCode = e.which || e.keyCode;
+							e.keyCode = keyCode;
+							e.keyName = self.keycodes[keyCode];
+						}
 						e.currentEvent = e.type;
 						callback.call(self, e);
 					});
 				}
+			}
+			return this;
+		},
+		off: function(event){
+			if(typeof event === "string"){
+				this.unregisterEvent(element, event);
+			} 
+			return this;
+		},
+		one: function(event, callback){
+			if(typeof event === "string" && typeof callback === "function"){
+				onetime(element, event, callback);
 			}
 			return this;
 		},
@@ -490,6 +622,18 @@ var Keyder = function(element){
 				});
 			}
 			return this;
+		},
+		resize: function(callback){
+			var self = this;
+			if(typeof callback === "function" && element === window){
+				this.registerEvent(element, "resize", function(e){
+					if(!e) e = window.event;
+					e.windowWidth = getWindowSize().width;
+					e.windowHeight = getWindowSize().height;
+					callback.call(self, e);
+				});
+			}
+			return this;
 		}
 	}
-};
+});
