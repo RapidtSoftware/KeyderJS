@@ -63,6 +63,12 @@ Example 3: a simple chained keydown/keyup event
 		console.log( "The Shift key was released" );
 	} );
 
+Example 4: a simple handler for multiple events
+
+	Keyder( document.getElementById( "my_element" ) ).on( "click mouseover", function(){
+		console.log( "You did: " + e.currentEvent );
+	} );
+
 Advanced Features
 =====
 
