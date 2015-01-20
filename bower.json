@@ -1,29 +1,23 @@
 {
-  "name"        : "semantic",
-  "description" : "Semantic empowers designers and developers by creating a shared vocabulary for UI.",
-  "homepage"    : "http://www.semantic-ui.com",
+  "name"        : "keyderjs",
+  "description" : "KeyderJS is a simple, yet powerful, JavaScript event library.",
   "author": {
-    "name" : "Jack Lukic",
-    "web"  : "http://www.jacklukic.com"
-  },
-  "dependencies": {
-    "jquery"      : ">=1.8"
+    "name" : "Jacques Marais",
   },
   "main": [
-    "dist/semantic.css",
-    "dist/semantic.js"
+    "Keyder.js"
   ],
   "keywords": [
-    "semantic",
-    "ui",
-    "css3",
-    "framework"
+    "keyder"
+    "events",
+    "javascript",
+    "library",
+    "event",
   ],
   "license" : [
-    "http://semantic-ui.mit-license.org/"
+    "https://raw.githubusercontent.com/GethisOrg/KeyderJS/master/LICENSE.md"
   ],
   "ignore": [
-    "src/site",
-    "test"
+    "tests"
   ]
 }
