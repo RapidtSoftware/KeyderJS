@@ -3,8 +3,13 @@ KeyderJS
 
 KeyderJS is a JavaScript event library.
 
+Fast, Easy and Small
+--------------------
+
+With the minified version only 10kb KeyderJS is as fast as light, small as an electron and easy as apple pie.
+
 Installation
-====
+============
 
 KeyderJS installation is as simple as 123:
 
@@ -15,20 +20,12 @@ Do the following in your command line:
 
     bower install keyderjs
 
-Adding the `keyder.js` script
+Or Adding the `keyder.js` script
 -----------------------------
 
 Add the KeyderJS script file to your head section in your HTML file. Example:
 
-	<script src='path/to/keyder.js' type='text/javascript'></script>
-
-Write all your KeyderJS code inside the following, which can be added to your head or body section of your HTML file:
-
-	<script type='text/javascript'>
-		document.ready(function(){
-			//Write your KeyderJS code and other code here.
-		});
-	</script>
+	<script src='path/to/keyder.min.js' type='text/javascript'></script>
 
 Usage
 =====
