@@ -1,10 +1,10 @@
-document.ready = function(f){
-	function a(){
-		document.ready(f);
+document.ready = function(run){
+	function again(){
+		document.ready(run);
 	}
 	(/in/.test(document.readyState)) ?
-		setTimeout(a, 9) :
-		f();
+		setTimeout(again, 9) :
+		run();
 };
 function getWindowSize(){
 	 var viewportwidth;
