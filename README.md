@@ -8,6 +8,19 @@ Fast, Easy and Small
 
 With the minified version only 10kb KeyderJS is as fast as light, small as an electron and easy as apple pie.
 
+Cross-Browser
+-------------
+
+KeyderJS is also cross-browser and has been tested in:
+
+- Internet Explorer 6+
+- Google Chrome
+- Opera 11
+- Firefox 4+
+- Yandex.Browser Alpha
+
+Note: KeyderJS may work in other or older browsers
+
 Installation
 ============
 
