@@ -10,6 +10,9 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
+    <script>
+      activated = [];
+    </script>
     <section class="page-header">
       <h1 class="project-name">KeyderJS</h1>
       <h2 class="project-tagline">KeyderJS is a simple, yet powerful, JavaScript event library.</h2>
@@ -88,10 +91,11 @@
 <h2>
 <a id="example-1-a-simple-mousedown-event" class="anchor" href="#example-1-a-simple-mousedown-event" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example 1: a simple mousedown event</h2>
 
-<pre><code>Keyder( document.getElementById( "my_element" ) ).mousedown( function(){
-    console.log( "Mousedown" );
+<pre><code>Keyder( document.body ).mousedown( function(){
+    alert( "Mousedown" );
 });
 </code></pre>
+<script></script>
 
 <h2>
 <a id="example-2-a-click-event-with-two-handlers" class="anchor" href="#example-2-a-click-event-with-two-handlers" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Example 2: a click event with two handlers</h2>
@@ -155,6 +159,6 @@
 
     </section>
 
-  
+  <script src="keyder.min.js"></script>
   </body>
 </html>
